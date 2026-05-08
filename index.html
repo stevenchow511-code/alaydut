@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Final Love Space Cinematic</title>
+
+<style>
+body{
+  margin:0;
+  overflow:hidden;
+  background:black;
+  font-family:Arial;
+}
+
+/* ================= QUESTION PANEL ================= */
+.overlay-panel{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.75);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.panel-content{
+  text-align:center;
+  color:white;
+  background:rgba(30,20,60,0.9);
+  padding:30px;
+  border-radius:20px;
+  box-shadow:0 0 30px purple;
+}
+
+button{
+  margin:10px;
+  padding:10px 20px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+#btnYes{
+  background:#ff4d8d;
+  color:white;
+}
+
+#noBtn{
+  background:#444;
+  color:white;
+  position:relative;
+}
+
+/* ================= MESSAGE ================= */
+#loveMessage{
+  position:fixed;
+  width:100%;
+  text-align:center;
+  top:55%;
+  color:white;
+  font-size:26px;
+  opacity:0;
+  z-index:50;
+  transition:2s;
+  text-shadow:0 0 20px #ff66cc;
+}
+
+/* ================= PHOTO ================= */
+.photo{
+  position:absolute;
+  width:60px;
+  height:60px;
+  border-radius:12px;
+  border:2px solid white;
+  object-fit:cover;
+  opacity:0.85;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= QUESTION ================= -->
+<div id="questionPanel" class="overlay-panel">
+  <div class="panel-content">
+    <h2>Mau lihat orang paling kusayang ga? ❤️</h2>
+    <div>
+      <button id="btnYes">mauuu😍</button>
+      <button id="noBtn" onclick="moveNoBtn()">gaaa🙂‍↔️</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= LOVE MESSAGE ================= -->
+<div id="loveMessage">
+  YOU DESERVE TO BE HAPPINESS DUT❤️
+</div>
+
+<!-- ================= 7 PHOTO ================= -->
+<img class="photo" id="p1" src="https://i.ibb.co/mrBZ8BTn/image.png">
+<img class="photo" id="p2" src="https://i.ibb.co/6RbtKzpg/image.png">
+<img class="photo" id="p3" src="https://i.ibb.co/3YzYzdjJ/image.png">
+<img class="photo" id="p4" src="https://i.ibb.co/1tVy23dC/1d9f3158628c956022cd431a90b25e8f.jpg">
+<img class="photo" id="p5" src="https://i.ibb.co/BH5gbf7G/88b3aee654bed7351b10e951f14c3a21.jpg">
+<img class="photo" id="p6" src="https://i.ibb.co/ycMGPpbw/image.png">
+<img class="photo" id="p7" src="https://i.ibb.co/vCKdPk9y/image.png">
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<script>
+
+// ================= BUTTON =================
+document.getElementById("btnYes").onclick = () => {
+  document.getElementById("questionPanel").style.display = "none";
+
+  // show message
+  document.getElementById("loveMessage").style.opacity = 1;
+};
+
+function moveNoBtn(){
+  const btn = document.getElementById("noBtn");
+  btn.style.position = "absolute";
+  btn.style.top = Math.random()*80 + "%";
+  btn.style.left = Math.random()*80 + "%";
+}
+
+// ================= SCENE =================
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x000000, 0.02);
+
+// CAMERA
+const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
+camera.position.z = 12;
+
+// RENDERER
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// ================= STARS =================
+const geo = new THREE.BufferGeometry();
+let p = [];
+
+for(let i=0;i<4000;i++){
+  p.push((Math.random()-0.5)*220);
+  p.push((Math.random()-0.5)*220);
+  p.push((Math.random()-0.5)*220);
+}
+
+geo.setAttribute('position', new THREE.Float32BufferAttribute(p,3));
+
+const stars = new THREE.Points(
+  geo,
+  new THREE.PointsMaterial({color:0xaa66ff,size:0.6})
+);
+
+scene.add(stars);
+
+// ================= PLANET =================
+const planet = new THREE.Mesh(
+  new THREE.SphereGeometry(2.6,64,64),
+  new THREE.MeshStandardMaterial({
+    color:0x7b4dff,
+    emissive:0x220033,
+    metalness:0.6,
+    roughness:0.25
+  })
+);
+scene.add(planet);
+
+// ================= RING =================
+const ring = new THREE.Mesh(
+  new THREE.RingGeometry(3.3,4.6,120),
+  new THREE.MeshBasicMaterial({
+    color:0xff99ff,
+    transparent:true,
+    opacity:0.3,
+    side:THREE.DoubleSide
+  })
+);
+ring.rotation.x = Math.PI/2;
+planet.add(ring);
+
+// ================= LIGHT =================
+scene.add(new THREE.PointLight(0xffffff,2.5));
+
+// ================= HEARTS =================
+let hearts=[];
+function heart(){
+  const h = new THREE.Mesh(
+    new THREE.SphereGeometry(0.06,8,8),
+    new THREE.MeshBasicMaterial({color:0xff4d6d})
+  );
+
+  h.position.set(
+    (Math.random()-0.5)*8,
+    (Math.random()-0.5)*5,
+    (Math.random()-0.5)*8
+  );
+
+  h.speed = 0.01 + Math.random()*0.02;
+  scene.add(h);
+  hearts.push(h);
+}
+setInterval(heart,120);
+
+// ================= METEORS =================
+let meteors=[];
+function meteor(){
+  const m = new THREE.Mesh(
+    new THREE.SphereGeometry(0.07,8,8),
+    new THREE.MeshBasicMaterial({color:0xffcc66})
+  );
+
+  m.position.set((Math.random()-0.5)*10,7,(Math.random()-0.5)*10);
+  m.speed = 0.05 + Math.random()*0.08;
+
+  scene.add(m);
+  meteors.push(m);
+}
+setInterval(meteor,200);
+
+// ================= PHOTO ORBIT =================
+const photos = [p1,p2,p3,p4,p5,p6,p7];
+
+// ================= ANIMATION =================
+function animate(){
+  requestAnimationFrame(animate);
+
+  const t = Date.now()*0.0004;
+
+  planet.rotation.y += 0.002;
+  ring.rotation.z += 0.001;
+  stars.rotation.y += 0.0002;
+
+  camera.position.x = Math.sin(t)*12;
+  camera.position.z = Math.cos(t)*12;
+  camera.position.y = Math.sin(t*0.6)*2.5;
+  camera.lookAt(planet.position);
+
+  // meteors
+  meteors.forEach((m,i)=>{
+    m.position.y -= m.speed;
+    if(m.position.y < -6){
+      scene.remove(m);
+      meteors.splice(i,1);
+    }
+  });
+
+  // hearts
+  hearts.forEach((h,i)=>{
+    h.position.y += h.speed;
+    if(h.position.y > 6){
+      scene.remove(h);
+      hearts.splice(i,1);
+    }
+  });
+
+  // PHOTO ORBIT
+  photos.forEach((pEl,i)=>{
+    const angle = t + i*0.9;
+    const radius = 6;
+
+    const x = Math.cos(angle)*radius;
+    const z = Math.sin(angle)*radius;
+
+    const screen = toScreen(x,1.5,z);
+
+    pEl.style.left = screen.x+"px";
+    pEl.style.top = screen.y+"px";
+  });
+
+  // MESSAGE FLOAT FOLLOW PLANET
+  const msg = document.getElementById("loveMessage");
+
+  const screen = toScreen(0,2.2,0);
+
+  msg.style.left = "50%";
+  msg.style.top = screen.y + "50px";
+  msg.style.transform = "translateX(-50%)";
+
+  renderer.render(scene,camera);
+}
+
+function toScreen(x,y,z){
+  const v = new THREE.Vector3(x,y,z);
+  v.project(camera);
+
+  return {
+    x:(v.x*0.5+0.5)*innerWidth,
+    y:(-v.y*0.5+0.5)*innerHeight
+  };
+}
+
+animate();
+
+// ================= RESIZE =================
+addEventListener('resize',()=>{
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
+
+</script>
+
+</body>
+</html>
